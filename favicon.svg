@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .bg { fill: #6366F1; }
+      .fg { fill: #ffffff; }
+    </style>
+  </defs>
+  <!-- Rounded square background -->
+  <rect x="0" y="0" width="512" height="512" rx="92" ry="92" class="bg"/>
+  <!-- Chat bubble -->
+  <rect x="76" y="120" rx="60" ry="60" width="360" height="240" class="fg"/>
+  <polygon points="190,360 260,360 240,420" class="fg"/>
+  <!-- Shield -->
+  <path d="M256 180 L336 180 L308 220 L256 280 L204 220 L176 180 Z" class="bg"/>
+  <!-- Check mark -->
+  <path d="M230 260 L250 280 L298 230" stroke="#ffffff" stroke-width="24" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
