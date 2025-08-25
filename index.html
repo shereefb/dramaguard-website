@@ -1,12 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
-  <meta name="theme-color" content="#6366F1">
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Drama Guard — Slack‑native AI coach</title>
@@ -20,15 +14,27 @@
   <!-- React + ReactDOM (UMD) -->
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom-client.production.min.js"></script>
   <!-- Babel for inline JSX (only for this static page) -->
   <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js"></script>
   <!-- Recharts (UMD) -->
   <script src="https://cdn.jsdelivr.net/npm/recharts@2.12.7/umd/Recharts.min.js"></script>
+  <!-- Favicons & manifest -->
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#6366F1">
 </head>
 <body class="text-gray-900">
-  <div id="root"></div>
+  <div id="root"><div style="padding:16px;font-family:system-ui">Loading…</div></div>
+  <noscript>
+    <div style="padding:12px;margin:12px;border:1px solid #ffeeba;background:#fff3cd;color:#533f03;font-family:system-ui">
+      JavaScript is disabled. Enable it to view this site.
+    </div>
+  </noscript>
 
-  <script type="text/babel">
+  <script type="text/babel" data-presets="env,react">
     const {
       ResponsiveContainer,
       LineChart,
@@ -256,7 +262,7 @@
                 Pick subtle emoji‑only, concise, or rich nudges; set direct/warm/formal voice preferences.
               </FeatureCard>
               <FeatureCard title="Fast & accurate" icon={<span>⚡</span>}>
-                Real‑time nudges (P95 < 2s) with F1 ≥ 0.85 across drama roles—plus a feedback loop to keep improving.
+                Real‑time nudges (P95 &lt; 2s) with F1 ≥ 0.85 across drama roles—plus a feedback loop to keep improving.
               </FeatureCard>
             </div>
           </Section>
@@ -514,7 +520,7 @@
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
+    const root = ReactDOMClient.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
 </body>
