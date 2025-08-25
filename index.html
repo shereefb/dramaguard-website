@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Drama Guard — Slack‑native AI coach</title>
+  <meta name="description" content="Drama Guard detects drama patterns in Slack and privately coaches your team back to clarity. Anonymized org insights, privacy‑first." />
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Small tweaks */
+    html { scroll-behavior: smooth; }
+  </style>
+  <!-- React + ReactDOM (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <!-- Babel for inline JSX (only for this static page) -->
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js"></script>
+  <!-- Recharts (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/recharts@2.12.7/umd/Recharts.min.js"></script>
+</head>
+<body class="text-gray-900">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const {
+      ResponsiveContainer,
+      LineChart,
+      Line,
+      XAxis,
+      YAxis,
+      CartesianGrid,
+      Tooltip,
+      PieChart,
+      Pie,
+      Cell,
+      BarChart,
+      Bar,
+      Legend,
+    } = Recharts;
+
+    // --- Sample data ---
+    const dramaTrend = [
+      { week: "W1", score: 68 }, { week: "W2", score: 64 }, { week: "W3", score: 72 }, { week: "W4", score: 59 },
+      { week: "W5", score: 55 }, { week: "W6", score: 52 }, { week: "W7", score: 49 }, { week: "W8", score: 46 },
+      { week: "W9", score: 44 }, { week: "W10", score: 42 }, { week: "W11", score: 40 }, { week: "W12", score: 38 },
+    ];
+
+    const roleMix = [
+      { name: "Victim", value: 42 },
+      { name: "Persecutor", value: 35 },
+      { name: "Rescuer", value: 23 },
+    ];
+
+    const adoption = [
+      { team: "Design", reframe: 62, timeToRepair: 2.4 },
+      { team: "Backend", reframe: 54, timeToRepair: 2.9 },
+      { team: "Sales", reframe: 48, timeToRepair: 3.6 },
+      { team: "Support", reframe: 70, timeToRepair: 1.9 },
+    ];
+
+    const pieColors = ["#6366F1", "#22C55E", "#F59E0B"]; // indigo, green, amber
+
+    const Section = ({ id, className = "", children }) => (
+      <section id={id} className={`max-w-7xl mx-auto px-6 md:px-8 ${className}`}>{children}</section>
+    );
+
+    const Badge = ({ children }) => (
+      <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 text-indigo-700 px-3 py-1 text-sm font-medium">
+        <span className="inline-block w-4 h-4">✨</span> {children}
+      </span>
+    );
+
+    const Card = ({ children, className = "" }) => (
+      <div className={`rounded-2xl border border-gray-200 bg-white ${className}`}>{children}</div>
+    );
+    const CardHeader = ({ children, className = "" }) => (
+      <div className={`p-5 border-b border-gray-100 ${className}`}>{children}</div>
+    );
+    const CardTitle = ({ children, className = "" }) => (
+      <h3 className={`font-semibold ${className}`}>{children}</h3>
+    );
+    const CardContent = ({ children, className = "" }) => (
+      <div className={`p-5 ${className}`}>{children}</div>
+    );
+
+    const Button = ({ children, variant = "primary", size = "md", href, ...rest }) => {
+      const base = "inline-flex items-center justify-center rounded-xl font-semibold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-offset-2";
+      const sizes = {
+        sm: "px-3 py-1.5 text-sm",
+        md: "px-4 py-2 text-sm",
+        lg: "px-5 py-2.5 text-base",
+      };
+      const variants = {
+        primary: "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-600",
+        secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-300",
+      };
+      const cls = `${base} ${sizes[size]} ${variants[variant]}`;
+      return href ? (
+        <a className={cls} href={href} {...rest}>{children}</a>
+      ) : (
+        <button className={cls} {...rest}>{children}</button>
+      );
+    };
+
+    const FeatureCard = ({ title, icon, children }) => (
+      <Card className="shadow-sm hover:shadow-md transition">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-xl bg-gray-50">{icon}</div>
+            <CardTitle className="text-lg">{title}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="text-gray-600 text-sm leading-6">{children}</CardContent>
+      </Card>
+    );
+
+    const SlackBubble = ({ role, original, label, rewrite, prompt }) => (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <span className="w-4 h-4">💬</span> {label}
+            <span className="ml-auto text-xs text-gray-500">{role}</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div>
+              <div className="text-xs uppercase tracking-wide text-gray-500 mb-1">Original</div>
+              <div className="rounded-xl p-3 bg-gray-50 border text-gray-700">{original}</div>
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wide text-gray-500 mb-1">Suggested rewrite</div>
+              <div className="rounded-xl p-3 bg-indigo-50 border border-indigo-200 text-gray-800">{rewrite}</div>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-500">Coach prompt: <span className="font-medium text-gray-700">{prompt}</span></div>
+              <div className="flex gap-2">
+                <Button variant="secondary" size="sm">Insert</Button>
+                <Button size="sm">Rephrase again</Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+
+    function App() {
+      return (
+        <div className="min-h-screen">
+          {/* Nav */}
+          <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
+            <Section className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-xl bg-indigo-600" />
+                <span className="font-semibold">Drama Guard</span>
+              </div>
+              <nav className="hidden md:flex items-center gap-6 text-sm">
+                <a href="#features" className="hover:text-indigo-600">Features</a>
+                <a href="#how" className="hover:text-indigo-600">How it works</a>
+                <a href="#nudges" className="hover:text-indigo-600">Nudges</a>
+                <a href="#dashboard" className="hover:text-indigo-600">Dashboard</a>
+                <a href="#theory" className="hover:text-indigo-600">Why it works</a>
+                <a href="#privacy" className="hover:text-indigo-600">Privacy</a>
+                <a href="#pricing" className="hover:text-indigo-600">Pricing</a>
+                <a href="#faq" className="hover:text-indigo-600">FAQ</a>
+              </nav>
+              <Button className="hidden md:inline-flex">Add to Slack</Button>
+            </Section>
+          </header>
+
+          {/* Hero */}
+          <Section className="py-16 md:py-24">
+            <div className="grid md:grid-cols-2 items-center gap-10">
+              <div>
+                <Badge>Slack‑native AI coach for drama‑free teams</Badge>
+                <h1 className="mt-4 text-4xl md:text-6xl font-bold leading-tight">
+                  Stop drama before it derails your work.
+                </h1>
+                <p className="mt-4 text-lg text-gray-600 max-w-xl">
+                  Drama Guard detects blame, helplessness, and over‑rescuing in Slack—and privately coaches your team back to clarity and ownership.
+                </p>
+                <div className="mt-6 flex gap-3">
+                  <Button size="lg">Add to Slack</Button>
+                  <Button size="lg" variant="secondary" href="#dashboard">See the demo</Button>
+                </div>
+                <ul className="mt-6 grid grid-cols-2 gap-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">✅ Private, ephemeral nudges</li>
+                  <li className="flex items-center gap-2">✅ Opt‑in channels & consent</li>
+                  <li className="flex items-center gap-2">✅ Anonymized org insights</li>
+                  <li className="flex items-center gap-2">✅ SOC 2 roadmap</li>
+                </ul>
+              </div>
+              <div className="relative">
+                <Card className="shadow-xl">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">🤖 Live nudge preview</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <SlackBubble
+                      role="Persecutor → Challenger"
+                      label="Blame detected"
+                      original={"This PR is a mess. You never follow the spec."}
+                      rewrite={"I’m concerned about mismatches with the spec in sections A and C. Can we align on the criteria and update the checklist?"}
+                      prompt={"What outcome do I want?"}
+                    />
+                    <SlackBubble
+                      role="Victim → Ownership"
+                      label="Powerless framing"
+                      original={"No one told me about the deadline so I can’t do anything."}
+                      rewrite={"I missed the deadline context. I can deliver a draft by EOD if we confirm scope on X and Y—can someone clarify?"}
+                      prompt={"What can I do in the next 24h?"}
+                    />
+                    <SlackBubble
+                      role="Rescuer → Coach"
+                      label="Over‑helping"
+                      original={"Let me just do this for you so it gets done."}
+                      rewrite={"Happy to help—what have you tried so far, and where would feedback be most useful?"}
+                      prompt={"What support was asked for?"}
+                    />
+                  </CardContent>
+                </Card>
+                <div className="absolute -top-6 -right-6 rotate-2">
+                  <span className="rounded-xl bg-emerald-100 text-emerald-800 px-3 py-1 text-xs font-medium shadow">Avg. time‑to‑repair ↓ 29% in 8 weeks</span>
+                </div>
+              </div>
+            </div>
+          </Section>
+
+          {/* Features */}
+          <Section id="features" className="py-20">
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold">Features that turn tense threads into progress</h2>
+              <p className="mt-3 text-gray-600">Built for Slack. Designed for privacy. Tuned for real work.</p>
+            </div>
+            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <FeatureCard title="Drama Index & trends" icon={<span>📈</span>}>
+                Message‑level Drama Index (0–10) rolls up into channel and team scores with clear trends.
+              </FeatureCard>
+              <FeatureCard title="Private coaching & rewrites" icon={<span>💡</span>}>
+                Ephemeral nudges to authors with 1‑click rewrites and micro‑prompts that move conversations forward.
+              </FeatureCard>
+              <FeatureCard title="Thread‑level de‑escalation" icon={<span>🧩</span>}>
+                On any message, use “Get coaching” to summarize patterns and choose a next‑step template.
+              </FeatureCard>
+              <FeatureCard title="Consent‑first privacy" icon={<span>🛡️</span>}>
+                Opt‑in channels, granular controls, k‑anonymity on reports, and 0–30 day retention options.
+              </FeatureCard>
+              <FeatureCard title="Personalized tone" icon={<span>🎛️</span>}>
+                Pick subtle emoji‑only, concise, or rich nudges; set direct/warm/formal voice preferences.
+              </FeatureCard>
+              <FeatureCard title="Fast & accurate" icon={<span>⚡</span>}>
+                Real‑time nudges (P95 < 2s) with F1 ≥ 0.85 across drama roles—plus a feedback loop to keep improving.
+              </FeatureCard>
+            </div>
+          </Section>
+
+          {/* How it works */}
+          <Section id="how" className="py-20">
+            <div className="grid md:grid-cols-4 gap-6">
+              {[
+                { title: "Install & invite", copy: "Admin installs the app and invites Drama Guard to opt‑in channels.", icon: "🤖" },
+                { title: "Detect", copy: "NLP/LLM models spot Victim/Persecutor/Rescuer patterns and intensity in context.", icon: "✨" },
+                { title: "Coach", copy: "The author gets a private nudge with suggested rewrites and prompts.", icon: "💬" },
+                { title: "Improve", copy: "Dashboards show anonymized trends; teams iterate in retros.", icon: "📈" },
+              ].map((s, i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2"><span>{s.icon}</span> {s.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-gray-600 text-sm">{s.copy}</CardContent>
+                </Card>
+              ))}
+            </div>
+          </Section>
+
+          {/* Nudges */}
+          <Section id="nudges" className="py-20">
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold">Sample Slack nudges</h2>
+              <p className="mt-3 text-gray-600">Each nudge is private to the author and tuned to shift from drama to ownership, curiosity, and clear agreements.</p>
+            </div>
+            <div className="mt-10 grid md:grid-cols-3 gap-6">
+              <SlackBubble
+                role="Persecutor → Challenger"
+                label="Blame detected"
+                original={"You ignored my request again. This is ridiculous."}
+                rewrite={"I didn’t see movement on the request from Tuesday. What’s blocking it, and what can we commit to by Thursday?"}
+                prompt={"What outcome do I want?"}
+              />
+              <SlackBubble
+                role="Victim → Ownership"
+                label="Powerless framing"
+                original={"We always get left out of decisions so there’s no point in speaking up."}
+                rewrite={"I’d like our team included on decisions about X. What’s the process and how can I participate next round?"}
+                prompt={"What can I do?"}
+              />
+              <SlackBubble
+                role="Rescuer → Coach"
+                label="Unsolicited fixing"
+                original={"I’ll jump in and redo the deck for you."}
+                rewrite={"Do you want help on the deck? If so, which sections would be most useful for me to review?"}
+                prompt={"What support was asked for?"}
+              />
+            </div>
+          </Section>
+
+          {/* Dashboard */}
+          <Section id="dashboard" className="py-20">
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold">Anonymized org insights</h2>
+              <p className="mt-3 text-gray-600">Track drama density, role distribution, and reframe adoption—without exposing individuals.</p>
+            </div>
+            <div className="mt-10 grid lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">📈 Drama score trend (12 weeks)</CardTitle>
+                </CardHeader>
+                <CardContent className="h-60">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={dramaTrend}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="week" />
+                      <YAxis domain={[30, 80]} />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="score" stroke="#6366F1" strokeWidth={2} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">🧭 Role distribution</CardTitle>
+                </CardHeader>
+                <CardContent className="h-60">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Tooltip />
+                      <Pie data={roleMix} dataKey="value" nameKey="name" innerRadius={50}>
+                        {roleMix.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">🧰 Reframe adoption & time‑to‑repair</CardTitle>
+                </CardHeader>
+                <CardContent className="h-60">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={adoption}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="team" />
+                      <YAxis yAxisId="left" orientation="left" />
+                      <YAxis yAxisId="right" orientation="right" />
+                      <Tooltip />
+                      <Legend />
+                      <Bar yAxisId="left" dataKey="reframe" name="Reframe adoption %" fill="#22C55E" />
+                      <Bar yAxisId="right" dataKey="timeToRepair" name="Time to repair (hrs)" fill="#F59E0B" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+            <p className="mt-4 text-xs text-gray-500 text-center">* All charts reflect sample data for illustration only. Reports honor k‑anonymity and privacy settings.</p>
+          </Section>
+
+          {/* Theory */}
+          <Section id="theory" className="py-20">
+            <div className="grid md:grid-cols-2 gap-10 items-start">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold">The theory: from drama to responsibility</h2>
+                <p className="mt-4 text-gray-700 leading-7">
+                  Drama Guard is based on the Karpman Drama Triangle—three reactive roles (Victim, Persecutor, Rescuer) that keep teams stuck. We detect linguistic cues for these roles and coach toward above‑the‑line behaviors: ownership (What can I do?), curiosity (What’s the request?), and clear agreements (Who will do what by when?).
+                </p>
+                <ul className="mt-4 space-y-2 text-gray-700">
+                  <li className="flex gap-2">✅ Role detection with context (last 12+ messages)</li>
+                  <li className="flex gap-2">✅ Micro‑prompts to shift state, not shame</li>
+                  <li className="flex gap-2">✅ Templates that preserve intent and facts</li>
+                </ul>
+              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Coaching templates (excerpt)</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-gray-700 space-y-4">
+                  <div>
+                    <div className="font-medium">Victim → Ownership</div>
+                    <div className="mt-1 rounded-lg bg-gray-50 border p-3">“I’m blocked by <em>X</em>. I can deliver <em>Y</em> by <em>EOD</em> if we clarify <em>Z</em>—can you confirm?”</div>
+                  </div>
+                  <div>
+                    <div className="font-medium">Persecutor → Challenger</div>
+                    <div className="mt-1 rounded-lg bg-gray-50 border p-3">“I’m concerned about <em>[specific]</em>. Can we agree on criteria and next steps?”</div>
+                  </div>
+                  <div>
+                    <div className="font-medium">Rescuer → Coach</div>
+                    <div className="mt-1 rounded-lg bg-gray-50 border p-3">“Happy to help. What have you tried, and where do you want input?”</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </Section>
+
+          {/* Privacy */}
+          <Section id="privacy" className="py-20">
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold">Privacy by design</h2>
+              <p className="mt-3 text-gray-600">Private-first coaching with controls your security team will love.</p>
+            </div>
+            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <FeatureCard title="Opt‑in coverage" icon={<span>🛡️</span>}>
+                The bot only analyzes channels it’s invited to. DM scanning is off by default.
+              </FeatureCard>
+              <FeatureCard title="Minimal data" icon={<span>📦</span>}>
+                Store features-only with 0–30 day retention; optional 0‑day streaming mode.
+              </FeatureCard>
+              <FeatureCard title="Anonymized analytics" icon={<span>🧮</span>}>
+                Reports enforce k‑anonymity; no individual scorecards by default.
+              </FeatureCard>
+              <FeatureCard title="Compliance‑ready" icon={<span>✅</span>}>
+                OAuth, SSO/SAML, audit logs; SOC 2 Type II on the roadmap; GDPR/CCPA controls.
+              </FeatureCard>
+            </div>
+          </Section>
+
+          {/* Pricing */}
+          <Section id="pricing" className="py-20">
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold">Simple pricing that scales with you</h2>
+              <p className="mt-3 text-gray-600">Start small, grow culture‑wide.</p>
+            </div>
+            <div className="mt-10 grid md:grid-cols-3 gap-6">
+              {[
+                { name: "Starter", price: "$199/mo", blurb: "Up to 50 users. Channel‑based pricing.", items: ["Core detection & nudges", "2 pilot channels", "Basic dashboard"] },
+                { name: "Growth", price: "$5/user/mo", blurb: "Full analytics & digests.", items: ["All Starter features", "Manager weekly digests", "Custom nudge styles", "7‑day retention controls"] },
+                { name: "Enterprise", price: "Talk to us", blurb: "Grid, SSO, DPA/SCCs, residency.", items: ["Org‑wide install", "RBAC & SSO/SAML", "DP noise & k‑anonymity", "Custom data residency"] },
+              ].map((tier, i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <CardTitle className="flex items-baseline justify-between">
+                      <span>{tier.name}</span>
+                      <span className="text-xl font-semibold">{tier.price}</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 text-sm">{tier.blurb}</p>
+                    <ul className="mt-4 space-y-2 text-sm">
+                      {tier.items.map((it, idx) => (
+                        <li key={idx} className="flex items-center gap-2">✅ {it}</li>
+                      ))}
+                    </ul>
+                    <Button className="w-full mt-6">Choose {tier.name}</Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </Section>
+
+          {/* FAQ */}
+          <Section id="faq" className="py-20">
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold">FAQs</h2>
+              <p className="mt-3 text-gray-600">Quick answers for admins, managers, and teammates.</p>
+            </div>
+            <div className="mt-10 grid md:grid-cols-2 gap-6 text-sm text-gray-700">
+              <Card>
+                <CardHeader><CardTitle className="text-base">Does Drama Guard read all messages?</CardTitle></CardHeader>
+                <CardContent>Only in channels it’s explicitly invited to. DM scanning is off by default and can be disabled org‑wide.</CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle className="text-base">Will my manager see my nudges?</CardTitle></CardHeader>
+                <CardContent>Nudges are private to the author. Reports are anonymized and k‑anonymous—no individual scorecards by default.</CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle className="text-base">How accurate is detection?</CardTitle></CardHeader>
+                <CardContent>We target F1 ≥ 0.85 overall (≥ 0.80 per role) and use conservative thresholds. There’s a thumbs‑up/down to improve over time.</CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle className="text-base">What about compliance?</CardTitle></CardHeader>
+                <CardContent>Encryption in transit/rest, SSO/SAML for dashboard, audit logs. SOC 2 Type II is on our compliance roadmap.</CardContent>
+              </Card>
+            </div>
+          </Section>
+
+          {/* CTA */}
+          <Section className="py-20">
+            <Card className="shadow-lg">
+              <CardContent className="p-10 md:p-14 text-center">
+                <h3 className="text-2xl md:text-3xl font-bold">Ready to defuse drama—without shaming anyone?</h3>
+                <p className="mt-3 text-gray-600 max-w-2xl mx-auto">Install Drama Guard in a pilot channel and see reframe adoption climb within weeks.</p>
+                <div className="mt-6 flex justify-center gap-3">
+                  <Button size="lg">Add to Slack</Button>
+                  <Button size="lg" variant="secondary" href="#features">Explore features</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </Section>
+
+          <footer className="py-10 text-center text-xs text-gray-500">
+            © {new Date().getFullYear()} Drama Guard. Purpose‑built for drama dynamics. Not a replacement for HR, therapy, or legal counsel.
+          </footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
