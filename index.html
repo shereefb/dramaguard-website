@@ -23,6 +23,7 @@
     /* Band background helpers */
     .bg-uranian { background-color: var(--uranian-blue); }
     .bg-outer-space { background-color: var(--outer-space); }
+    .bg-black-palette { background-color: var(--black); }
     .bg-air-superiority { background-color: var(--air-superiority-blue); }
     .bg-paynes { background-color: var(--paynes-gray); }
 
@@ -279,21 +280,21 @@
       return (
         <div className="min-h-screen">
           {/* Nav */}
-          <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
+          <header className="sticky top-0 z-40 bg-black-palette text-uranian border-b border-gray-700">
             <Section className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
                 <div className="h-8 w-8 rounded-xl bg-indigo-600" />
                 <span className="font-semibold">Drama Guard</span>
               </div>
               <nav className="hidden md:flex items-center gap-6 text-sm">
-                <a href="#features" className="hover:text-indigo-600">Features</a>
-                <a href="#how" className="hover:text-indigo-600">How it works</a>
-                <a href="#nudges" className="hover:text-indigo-600">Nudges</a>
-                <a href="#dashboard" className="hover:text-indigo-600">Dashboard</a>
-                <a href="#theory" className="hover:text-indigo-600">Why it works</a>
-                <a href="#privacy" className="hover:text-indigo-600">Privacy</a>
-                <a href="#pricing" className="hover:text-indigo-600">Pricing</a>
-                <a href="#faq" className="hover:text-indigo-600">FAQ</a>
+                <a href="#features" className="text-uranian hover:text-white">Features</a>
+                <a href="#how" className="text-uranian hover:text-white">How it works</a>
+                <a href="#nudges" className="text-uranian hover:text-white">Nudges</a>
+                <a href="#dashboard" className="text-uranian hover:text-white">Dashboard</a>
+                <a href="#theory" className="text-uranian hover:text-white">Why it works</a>
+                <a href="#privacy" className="text-uranian hover:text-white">Privacy</a>
+                <a href="#pricing" className="text-uranian hover:text-white">Pricing</a>
+                <a href="#faq" className="text-uranian hover:text-white">FAQ</a>
               </nav>
               <Button className="hidden md:inline-flex">Add to Slack</Button>
             </Section>
