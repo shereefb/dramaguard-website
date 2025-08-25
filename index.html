@@ -279,13 +279,18 @@
     };
 
     function App() {
+      const [isContactOpen, setIsContactOpen] = React.useState(false);
+      const openContact = (e) => { e?.preventDefault?.(); setIsContactOpen(true); };
+      const closeContact = () => setIsContactOpen(false);
+      const onSubmitContact = (e) => { e.preventDefault(); setIsContactOpen(false); };
+
       return (
         <div className="min-h-screen">
           {/* Nav */}
           <header className="sticky top-0 z-40 bg-black-palette text-uranian-light border-b border-gray-700">
             <Section className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-xl bg-indigo-600" />
+                <img src="logo-square.svg" alt="Drama Guard" className="h-8 w-8 rounded-lg" />
                 <span className="font-semibold">Drama Guard</span>
               </div>
               <nav className="hidden md:flex items-center gap-6 text-sm">
@@ -298,7 +303,7 @@
                 <a href="#pricing" className="text-uranian-light hover:text-uranian">Pricing</a>
                 <a href="#faq" className="text-uranian-light hover:text-uranian">FAQ</a>
               </nav>
-              <Button className="hidden md:inline-flex">Add to Slack</Button>
+              <a href="#get-started" onClick={openContact} className="hidden md:inline-flex text-uranian-light hover:text-uranian">Get Started</a>
             </Section>
           </header>
 
@@ -718,6 +723,43 @@
               </CardContent>
             </Card>
           </Section>
+
+          {isContactOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/50" onClick={closeContact} />
+              <div className="relative z-10 w-full max-w-md mx-auto px-4">
+                <Card className="shadow-2xl">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Get Started</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={onSubmitContact} className="space-y-4">
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">Name</label>
+                        <input type="text" name="name" className="w-full rounded-lg border border-gray-300 p-2" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">Email</label>
+                        <input type="email" name="email" className="w-full rounded-lg border border-gray-300 p-2" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">Company</label>
+                        <input type="text" name="company" className="w-full rounded-lg border border-gray-300 p-2" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">Message</label>
+                        <textarea name="message" rows="4" className="w-full rounded-lg border border-gray-300 p-2"></textarea>
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="secondary" type="button" onClick={closeContact}>Cancel</Button>
+                        <Button type="submit">Submit</Button>
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
 
           <footer className="py-10 text-center text-xs bg-outer-space text-uranian">
             © {new Date().getFullYear()} Drama Guard. Purpose‑built for drama dynamics. Not a replacement for HR, therapy, or legal counsel.

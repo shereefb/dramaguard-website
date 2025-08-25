@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .bg { fill: #36494e; }
+      .bubble { fill: #a9cef4; }
+      .shield { fill: #597081; }
+      .check { stroke: #ffffff; stroke-width: 20; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .glow { fill: #7ea0b7; opacity: 0.12; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="512" height="512" rx="92" ry="92" class="bg"/>
+  <rect x="10" y="10" width="492" height="270" rx="80" ry="80" class="glow"/>
+  <rect x="72" y="120" width="368" height="240" rx="60" ry="60" class="bubble"/>
+  <polygon points="198,360 278,360 252,420" class="bubble"/>
+  <polygon points="256,190 336,190 318,230 256,292 194,230 176,190" class="shield"/>
+  <path d="M230 270 L252 296 L306 228" class="check"/>
+</svg>
