@@ -49,6 +49,8 @@
       Cell,
       BarChart,
       Bar,
+      AreaChart,
+      Area,
       Legend,
     } = Recharts;
 
@@ -73,6 +75,52 @@
     ];
 
     const pieColors = ["#6366F1", "#22C55E", "#F59E0B"]; // indigo, green, amber
+
+    // KPIs
+    const kpis = { index: 42, delta: -6, incidence: 17, reframe: 61, optOut: 3 };
+
+    // Stacked area data (role mix over time)
+    const roleAreaData = [
+      { week: "W1", Victim: 42, Persecutor: 35, Rescuer: 23 },
+      { week: "W2", Victim: 40, Persecutor: 34, Rescuer: 26 },
+      { week: "W3", Victim: 41, Persecutor: 33, Rescuer: 26 },
+      { week: "W4", Victim: 38, Persecutor: 32, Rescuer: 30 },
+      { week: "W5", Victim: 36, Persecutor: 31, Rescuer: 33 },
+      { week: "W6", Victim: 35, Persecutor: 29, Rescuer: 36 },
+      { week: "W7", Victim: 33, Persecutor: 28, Rescuer: 39 },
+      { week: "W8", Victim: 31, Persecutor: 27, Rescuer: 42 },
+      { week: "W9", Victim: 30, Persecutor: 26, Rescuer: 44 },
+      { week: "W10", Victim: 29, Persecutor: 25, Rescuer: 46 },
+      { week: "W11", Victim: 28, Persecutor: 24, Rescuer: 48 },
+      { week: "W12", Victim: 27, Persecutor: 23, Rescuer: 50 },
+    ];
+
+    // Heatmap sample (hour x weekday) values 0..10
+    function generateHeatmap() {
+      const days = 7, hours = 24;
+      const arr = Array.from({ length: hours }, (_, h) =>
+        Array.from({ length: days }, (_, d) => {
+          // Higher during work hours on weekdays; quieter nights/weekends
+          const isWeekend = d === 0 || d === 6; // Sun/Sat
+          const workHourBoost = Math.max(0, 1 - Math.abs(12 - h) / 12); // peak at noon
+          let v = (isWeekend ? 2 : 4) + workHourBoost * (isWeekend ? 3 : 6);
+          // small random jitter for texture
+          v += (Math.sin(h * 1.7 + d * 2.3) + 1) * 0.8;
+          return Math.max(0, Math.min(10, Math.round(v)));
+        })
+      );
+      return arr;
+    }
+    const heatmapData = generateHeatmap();
+
+    // Channel leaderboard sample
+    const channels = [
+      { name: "#eng-backend", msgs: 1240, index: 38, delta: -7, reframe: 65 },
+      { name: "#design", msgs: 860, index: 44, delta: -3, reframe: 58 },
+      { name: "#sales", msgs: 670, index: 52, delta: 2, reframe: 49 },
+      { name: "#support", msgs: 920, index: 36, delta: -9, reframe: 71 },
+      { name: "#all-hands", msgs: 310, index: 47, delta: -1, reframe: 54 },
+    ];
 
     const Section = ({ id, className = "", children }) => (
       <section id={id} className={`max-w-7xl mx-auto px-6 md:px-8 ${className}`}>{children}</section>
@@ -157,6 +205,54 @@
         </CardContent>
       </Card>
     );
+
+    const KpiCard = ({ label, value, sublabel, delta }) => (
+      <Card>
+        <CardContent>
+          <div className="text-sm text-gray-500">{label}</div>
+          <div className="mt-1 text-3xl font-bold">
+            {value}
+            {typeof delta === 'number' && (
+              <span className={`ml-2 text-sm font-medium ${delta < 0 ? 'text-emerald-600' : delta > 0 ? 'text-red-600' : 'text-gray-500'}`}>
+                {delta < 0 ? '▼' : delta > 0 ? '▲' : '•'} {Math.abs(delta)}
+              </span>
+            )}
+          </div>
+          {sublabel && <div className="text-xs text-gray-500">{sublabel}</div>}
+        </CardContent>
+      </Card>
+    );
+
+    const HeatmapGrid = ({ data }) => {
+      const max = 10;
+      const colorFor = (v) => {
+        const t = Math.max(0, Math.min(1, v / max));
+        // from indigo-50 (#EEF2FF) to indigo-600 (#4F46E5)
+        const c0 = [238, 242, 255];
+        const c1 = [79, 70, 229];
+        const mix = (a, b) => Math.round(a + (b - a) * t);
+        const r = mix(c0[0], c1[0]);
+        const g = mix(c0[1], c1[1]);
+        const b = mix(c0[2], c1[2]);
+        return `rgb(${r}, ${g}, ${b})`;
+      };
+      return (
+        <div className="overflow-x-auto">
+          <div className="min-w-[620px]">
+            <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(7, minmax(0,1fr))' }}>
+              {data.flatMap((row, h) => row.map((v, d) => (
+                <div
+                  key={`${h}-${d}`}
+                  className="rounded"
+                  style={{ backgroundColor: colorFor(v), height: 18 }}
+                  title={`Hour ${h}, Day ${d}: ${v}`}
+                />
+              )))}
+            </div>
+          </div>
+        </div>
+      );
+    };
 
     function App() {
       return (
@@ -381,6 +477,81 @@
               </Card>
             </div>
             <p className="mt-4 text-xs text-gray-500 text-center">* All charts reflect sample data for illustration only. Reports honor k‑anonymity and privacy settings.</p>
+
+            {/* KPI tiles */}
+            <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <KpiCard label="Org Drama Index" value={<span>{kpis.index}</span>} delta={kpis.delta} sublabel="Change vs prior 4 weeks" />
+              <KpiCard label="Incidents per 1k messages" value={<span>{kpis.incidence}</span>} sublabel="Lower is better" />
+              <KpiCard label="Reframe adoption" value={<span>{kpis.reframe}%</span>} sublabel="Percent of nudges that led to constructive rewrite" />
+              <KpiCard label="Opt‑out rate" value={<span>{kpis.optOut}%</span>} sublabel="Users who paused or opted out" />
+            </div>
+
+            {/* Deep dive */}
+            <div className="mt-10 grid lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base font-semibold">📊 Role mix over time</CardTitle>
+                </CardHeader>
+                <CardContent className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={roleAreaData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="week" />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip />
+                      <Area type="monotone" dataKey="Victim" stackId="1" stroke="#6366F1" fill="#6366F1" fillOpacity={0.35} />
+                      <Area type="monotone" dataKey="Persecutor" stackId="1" stroke="#22C55E" fill="#22C55E" fillOpacity={0.35} />
+                      <Area type="monotone" dataKey="Rescuer" stackId="1" stroke="#F59E0B" fill="#F59E0B" fillOpacity={0.35} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base font-semibold">🗓️ Drama heatmap (hour × weekday)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <HeatmapGrid data={heatmapData} />
+                  <div className="mt-2 text-xs text-gray-500">Darker = higher drama density (index 0–10).</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base font-semibold">🏷️ Channel leaderboard</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[520px]">
+                      <thead className="text-left text-gray-500">
+                        <tr>
+                          <th className="py-2">Channel</th>
+                          <th className="py-2">Msgs</th>
+                          <th className="py-2">Drama Index</th>
+                          <th className="py-2">Δ 4w</th>
+                          <th className="py-2">Reframe %</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {channels.map((c, i) => (
+                          <tr key={i} className="border-t">
+                            <td className="py-2 font-medium">{c.name}</td>
+                            <td className="py-2">{c.msgs.toLocaleString()}</td>
+                            <td className="py-2">{c.index}</td>
+                            <td className={`py-2 ${c.delta < 0 ? 'text-emerald-600' : c.delta > 0 ? 'text-red-600' : 'text-gray-500'}`}>
+                              {c.delta < 0 ? '▼' : c.delta > 0 ? '▲' : '•'} {Math.abs(c.delta)}
+                            </td>
+                            <td className="py-2">{c.reframe}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mt-2 text-xs text-gray-500">Improvement shown as ▼ (lower index). Use filters in the app to slice by org, location, or time.</div>
+                </CardContent>
+              </Card>
+            </div>
           </Section>
 
           {/* Theory */}
