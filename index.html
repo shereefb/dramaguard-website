@@ -14,9 +14,10 @@
   <!-- React + ReactDOM (UMD) -->
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom-client.production.min.js"></script>
   <!-- Babel for inline JSX (only for this static page) -->
   <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js"></script>
+  <!-- PropTypes (UMD) required by Recharts UMD build -->
+  <script src="https://cdn.jsdelivr.net/npm/prop-types@15.8.1/prop-types.min.js"></script>
   <!-- Recharts (UMD) -->
   <script src="https://cdn.jsdelivr.net/npm/recharts@2.12.7/umd/Recharts.min.js"></script>
   <!-- Favicons & manifest -->
@@ -520,7 +521,7 @@
       );
     }
 
-    const root = ReactDOMClient.createRoot(document.getElementById('root'));
+    const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
 </body>
