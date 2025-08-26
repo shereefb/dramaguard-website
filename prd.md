@@ -1,476 +1,265 @@
-# Drama Guard — Slack AI Coach PRD (Slack-based AI coach to reduce drama)
+# Drama Guard — MVP Product Requirements Document (PRD)
 
-**Doc owner:** Product (you)
-
-**Version:** v1.0
-**Last updated:** 2025-08-25
-**Stakeholders:** Product Managers, Developers, UX Designers, Slack Workspace Admins, Team Members, HR/People Ops
-
----
-
-## 1) Executive Summary
-
-Drama Guard is a Slack-native AI coach that helps teams notice and shift out of drama in written communication. It listens (with consent) to public channels, private channels it’s invited to, and DMs (where permitted), detects “below‑the‑line” drama roles (Victim, Persecutor, Rescuer), and delivers private, compassionate nudges with concrete rewrites. At the org level, it surfaces an anonymized “drama health” scorecard and trends so leaders can build healthier, more collaborative cultures.
-
-**Primary outcomes**
-
-* Reduce frequency and duration of drama-laden exchanges.
-* Increase reframe/adoption rate of constructive language.
-* Improve perceived psychological safety and clarity of requests.
-
-**Non‑goals**
-
-* Not a surveillance tool for disciplinary action.
-* Not a replacement for HR, therapy, or legal counsel.
-* Not a general-purpose toxicity detector; it is purpose-built for drama dynamics.
+**Version:** 0.1 (MVP)
+**Date:** August 25, 2025
+**Owner:** Product
+**Stakeholders:** Eng, Design, Security/Privacy, Customer Pilot Champions
 
 ---
 
-## 2) Problem, Goals, and Principles
+## 1) Summary
 
-**Problem**: Written comms often drift into blame, helplessness, or over-functioning. Once threads go “below the line,” they waste time, erode trust, and create churn.
+Drama Guard MVP is a **Slack bot** that can be **invited** into public channels, private channels, and DMs (with the bot). When present, it detects messages that fall **below the line** (Drama Triangle roles: Persecutor, Victim, Rescuer) and sends **private nudges** to the author to help them shift **above the line** (ownership, clarity, curiosity).
+
+> **Out of scope for MVP:** Org-wide assessments, dashboards, KPI tiles, exports/Discovery, long-term storage of message content, cross‑platform support (e.g., Microsoft Teams), and any per-user scorecards.
+
+**Why now**: Teams want lightweight, non-judgmental coaching *in the moment* without governance overhead. MVP focuses solely on real‑time nudges where the bot is explicitly present.
+
+---
+
+## 2) Goals & Non‑Goals
 
 **Goals**
 
-1. Detect drama patterns accurately in near‑real time (<2s P95 end-to-end for ephemeral nudges).
-2. Coach individuals privately with respectful, actionable guidance and suggested rewrites.
-3. Provide opt‑in team and org dashboards with anonymized trend metrics.
-4. Bake in privacy-by-design and consent-first controls.
+* Provide **real-time, private coaching** via ephemerals/DM to reduce drama language in Slack.
+* Be **easy to install and invite** by any motivated individual (subject to workspace settings).
+* Maintain **privacy by design** (consent-first coverage; minimal data retention).
 
-**Design principles**
+**Non‑Goals (MVP)**
 
-* *Consent and transparency*: Clear signals where the bot is active. Easy /pause and channel‑level controls.
-* *Private first*: Use ephemeral messages and DMs by default.
-* *Actionable coaching*: Offer 1–2 click rewrites, short prompts, and learning bites.
-* *Low friction*: No new surface if possible; everything runs in Slack.
-* *Ethical by default*: Aggregate reporting with k‑anonymity; no individual scorecards by default.
-
-## 2A) Scope, Assumptions & Dependencies
-
-**In scope**: Slack bot integration for real-time monitoring and coaching; aggregate health checks; user/admin controls for consent and customization.
-
-**Out of scope (v1)**: Other chat platforms (e.g., Microsoft Teams, Discord); advanced AI training interfaces; hardware dependencies.
-
-**Target audience**: Organizations on Slack—especially remote tech teams, agencies, and culture-forward enterprises.
-
-**Assumptions**: Users have basic Slack proficiency; organizations value psychological safety; detection quality improves with opt‑in, anonymized feedback data.
-
-**Dependencies**: Slack APIs; third‑party LLM services; cloud hosting (AWS/GCP/Azure).
-
-**Risks & mitigations**: False positives → conservative thresholds + easy `/pause`; privacy concerns → opt‑in channels, transparency, private-first nudges.
+* No org-wide analytics or health reports.
+* No admin dashboards beyond install/config basics.
+* No multi-tenant exports or Discovery API usage.
 
 ---
 
-## 2B) Key decisions on Slack data access
+## 3) Scope
 
-**TL;DR:** There is **no anonymous org‑wide read** for standard Slack apps. The bot can only read and receive events in conversations it can *see* (public channels it has joined, and private channels where it was **explicitly invited**). DM scanning is **off by default** and only applies to DMs *with the bot* if enabled.
+**In scope**
 
-**Two supported access paths**
+* Slack app with Bot user using granular permissions.
+* Real-time detection of below-the-line language in conversations the bot can see.
+* Private coaching nudges with suggested rewrites and micro-prompts.
+* Minimal controls: slash commands, App Home toggles, thumbs up/down feedback.
 
-1. **Real‑time Coaching (consent‑first)** — Events/Web API limited to conversations the bot is a member of. Public channels: auto‑join allowed. Private channels: **invite required**. Best for nudges and thread coaching.
-2. **Org Health (batch analytics)** — On Business+/Enterprise: Workspace/Org Owner can approve **data exports** (all conversations, incl. private & DMs) for governed, offline analysis. On Enterprise Grid: **Discovery API** enables programmatic org‑wide pulls under compliance controls. Not real‑time; governance‑heavy.
+**Out of scope**
 
-**Implications**
-
-* Product ships with two SKUs: **Real‑time Coaching (Opt‑in Channels)** and **Org Health (Exports/Discovery, Enterprise/B+)**.
-* Docs and UI must clearly communicate coverage limits and consent.
-* Private channels cannot be joined programmatically; provide an **“Invite Drama Guard”** shortcut and coverage report.
-
----
-
-## 3) Background: Drama Dynamics (operationalized)
-
-Informed by Transactional Analysis (Karpman Drama Triangle) and Conscious Leadership (e.g., *The 15 Commitments of Conscious Leadership*), we map conversational cues to roles and coach toward ownership, curiosity, and clear agreements.
-We operationalize “below‑the‑line” roles:
-
-* **Victim**: Powerless framing, externalizing agency. Markers: “I can’t…”, “No one told me…”, “This always happens to me…”.
-* **Persecutor**: Blame, attack, shaming. Markers: “You never…”, “This is stupid…”, sarcasm-as-attack.
-* **Rescuer**: Over-functioning, disempowering help. Markers: “Let me just do it for you…”, unsolicited fixes without consent.
-
-We coach to “above‑the‑line” postures: ownership (“What can I do?”), curiosity (“What’s the request?”), and collaboration (clear boundaries/agreements). The model translates this framing into concrete linguistic features and conversation-state patterns.
+* KPI charts, role mix trends, leaderboards, heatmaps, digests.
+* Storage of raw message bodies beyond transient processing window.
+* MS Teams or other platforms.
 
 ---
 
 ## 4) Personas
 
-1. **Ava – IC Engineer (end-user)**
-
-   * Pain: Threads get heated; wants quick prompts to rephrase.
-   * Success: Private nudge suggests a rewrite she can one-click send.
-
-2. **Marco – Team Lead / Manager**
-
-   * Pain: Recurrent drama spikes in certain channels.
-   * Success: Weekly drama health report + coaching tips for retros.
-
-3. **Rina – People Ops / HRBP**
-
-   * Pain: Wants culture signals without surveilling individuals.
-   * Success: Anonymized trendline by org unit; opt-in pilots; policy alignment.
-
-4. **Sam – Security/Compliance Admin**
-
-   * Pain: Data access & retention risk.
-   * Success: Clear scopes, data minimization, SOC 2 roadmap, admin controls.
-
-5. **Dana – Executive Sponsor**
-
-   * Pain: Cultural drag on velocity.
-   * Success: Company-level score with targets tied to engagement and retention.
+* **Teammate (Author):** Wants help phrasing messages constructively; fears public shaming. Receives private nudges.
+* **Channel Champion/Manager:** Invites the bot into high-friction threads/channels; ensures team buy‑in. Needs simple on/off and pause controls.
+* **Workspace Admin:** Installs/approves the app; cares that it is consent-first, minimally invasive, and compliant.
 
 ---
 
-## 5) Key User Stories & Acceptance Criteria
+## 5) User Stories (MVP)
 
-### 5.1 Real-time private coaching
+**Must‑have**
 
-* **As an IC**, when I compose or send a message with drama markers, I receive a private, ephemeral nudge with:
+1. *As a teammate*, I can **invite** Drama Guard to a public or private channel so it can coach me in that space.
+2. *As a teammate*, when I write a message that appears **below the line**, I get a **private nudge** (ephemeral if possible) with:
 
-  * (a) a brief label (e.g., “Blame detected”),
-  * (b) 1–2 suggested rewrites, and
-  * (c) a micro‑prompt (e.g., “What’s your specific request?”).
-    **Acceptance**: 95% of nudges appear within 2 seconds (P95). Users can insert a rewrite into the thread with one click. Nudges are visible only to the author.
+   * A plain-language reflection (what might be happening)
+   * A **rewrite suggestion**
+   * A **micro-prompt** (e.g., “What outcome do I want?”)
+   * **Insert** / **Try again** actions
+3. *As a teammate*, I can **pause/resume** nudges for myself.
+4. *As a champion*, I can **pause/resume** nudges for a channel.
+5. *As an admin*, I can **install** the app (or approve end‑user installs per workspace policy) and see a basic **App Home** with settings and help.
 
-### 5.2 Thread-level de‑escalation
+**Should‑have**
+6\. *As a teammate*, I can give **thumbs up/down** on suggestions to improve future nudges.
+7\. *As a teammate*, I can use a **message action** (e.g., “Get coaching”) to request a one‑off rewrite even if the bot didn’t auto‑nudge.
 
-* **As a participant**, if a thread escalates across multiple messages, I can click a message action → “Get coaching.”
-  **Acceptance**: App posts an ephemeral summary of patterns and suggested next message templates (e.g., clarifying request, boundary statement). No content is posted publicly unless user chooses.
-
-### 5.3 Opt-in channel coverage
-
-* **As a channel admin**, I can invite Drama Guard to a channel and set sensitivity (Low/Medium/High), privacy mode (ephemeral‑only vs allow public prompts), and keywords to ignore.
-  **Acceptance**: Settings persist; the bot displays a pinned notice and `/drama status` shows current mode.
-
-### 5.4 Org health check (anonymized)
-
-* **As People Ops**, I can view a dashboard summarizing drama indicators by org and time window.
-  **Acceptance**: Metrics meet k‑anonymity thresholds (e.g., no slice < 10 active users). No individual names shown by default. Export CSV of aggregated stats.
-
-### 5.5 Manager weekly digest
-
-* **As a manager**, I receive a weekly DM with top patterns in my team’s channels and recommended coaching prompts for retros.
-  **Acceptance**: Only includes channels where the bot was invited. No quotes of private DMs. Opt-out available.
-
-### 5.6 Consent & control
-
-* **\[M]** As a Team Member, I can opt‑in to personal monitoring and choose nudge style (emoji‑only, concise, rich) from App Home.
-* **As any user**, I can `/drama pause 1h|1d|7d`, `/drama resume`, `/drama delete-my-data`.
-  **Acceptance**: Commands execute immediately and are auditable in Admin logs.
-
-### 5.7 Admin governance
-
-* **As a Compliance Admin**, I can set org-wide data retention (0–30 days), export DPAs, and restrict features (e.g., disable DM scanning).
-  **Acceptance**: Settings enforced across workspaces/Org Grid; changes logged.
+**Could‑have** (post-MVP)
+8\. Nudge **tone styles** (concise, warm, formal).
+9\. **Practice mode** in DM with the bot for training outside of live channels.
 
 ---
 
-## 6) Functional Requirements
+## 6) Core Experience
 
-### 6.1 Slack integration
+### 6.1 Trigger & Detection
 
-* OAuth 2.0 with granular bot scopes. Minimum:
+* Bot listens to message events in conversations where it is present (public channel joined, private channel invited, DM with bot or MPIM including bot).
+* Each new message is scored by a lightweight classifier for **Persecutor/Victim/Rescuer** cues and overall **“below-the-line” confidence**.
+* If above threshold and not rate-limited, proceed to nudge.
 
-  * `channels:read`, `channels:history`, `groups:history` (for private channels where invited), `im:history` (configurable), `mpim:history`, `chat:write`, `chat:write.public`, `commands`, `reactions:write`, `users:read`, `team:read`.
-* Events API / Socket Mode for message events, edits, reactions, app\_home opened, and channel join/leave.
-* Use `chat.postEphemeral` for nudges; `chat.scheduleMessage` for digests.
-* Message Actions & Shortcuts: “Get coaching”, “Summarize thread”, “Set channel sensitivity”.
-* Slash commands: `/drama help|status|pause|resume|settings|analyze-thread|delete-my-data` (alias: `/dramaguard`).
+### 6.2 Nudge Delivery
 
-#### 6.1.1 Visibility & coverage realities
+* **Primary:** `chat.postEphemeral` to the **author** in-channel (private to them).
+* **Fallback:** DM the author if ephemeral cannot be delivered (user inactive).
+* Nudge content:
 
-* The app **only** receives events and can call history for conversations it can see (bot is a member / invited). No omniscient org read.
-* **Public channels**: enumerate via `conversations.list` and auto‑join with `conversations.join` per policy.
-* **Private channels**: **invite required**; app cannot self‑join.
-* **DMs**: off by default; only DMs **with the bot** are analyzable when enabled.
-* **Ephemeral nudges**: use `chat.postEphemeral` (author‑only, non‑persistent). If the user is inactive or delivery fails, **fallback to DM** with an opt‑out footer.
+  * Short reflection (e.g., “This reads like blame…”)
+  * 1–2 rewrite options
+  * Micro-prompt
+  * Buttons: **Insert rewrite** (posts an edited draft in composer via `chat.postMessage`/copy workflow), **Rephrase again** (regenerates), **Dismiss**.
 
-**Events to subscribe**: `message.channels`, `message.groups`, `message.mpim`, `app_mention` (and `message.im` only if 1:1 coaching is enabled).
+### 6.3 Controls
 
-**Acceptance tests**
+* Slash commands (tentative):
 
-* P95 end‑to‑end nudge latency ≤ 2s in a 10k msg/day sandbox.
-* Ephemeral visible only to author; DM fallback works when ephemeral fails.
-* Private channel coverage increases **only** via invites; attempts to auto‑join private return expected errors.
+  * `/drama help` — quick usage & links
+  * `/drama pause` / `/drama resume` — per-user toggle
+  * `/drama pause here` / `/drama resume here` — channel toggle (requires permission)
+  * `/drama coach` — open modal for on-demand coaching of selected text
+* App Home: global pause, learn the model, privacy details, feedback switch.
 
-### 6.2 Detection engine (NLP)
+### 6.4 Guardrails
 
-* Multi-label classifier for roles (Victim/Persecutor/Rescuer) + *intensity* (0–1) and *confidence*.
-* Features: sentiment, modality, blame/agency patterns, hedging, directives, rescue markers, rhetorical questions, absolutist terms, second-person accusations, negations, sarcasm cues, emoji/emoji-as-tone.
-* Context window: last N messages in thread (configurable; default 12) + speaker turns + reply relationships.
-* Language support: v1 English; roadmap: ES, FR, DE. Detect language and fall back gracefully.
-* Continual learning loop with human feedback (opt-in thumbs up/down on nudges).
-* Safety layer: profanity/harassment filter, PII redaction before storage.
-
-### 6.3 Coaching and content system
-
-* Rule-based templates + LLM rewriters produce:
-
-  * 1–2 rewrites preserving intent but shifting tone
-  * Micro‑prompts (questions to move “above the line”)
-  * Education snippets (e.g., “Ask vs. Accuse” 15-second reads)
-* Personalization knobs: user preferred tone (direct, warm, formal), reading level, emoji use, and nudge display style (emoji‑only subtle mode, concise, or rich).
-* Hallucination guardrails: rewrites must not fabricate facts; emphasize requests/agreements.
-
-### 6.4 Health scoring & analytics
-
-* **Message-level Drama Index**: 0–10 per message/thread; rolled up into channel/team composites.
-* **Indicators**: drama incidence rate (per 1k messages), role distribution, escalation streak length, recovery rate (nudge→reframe), time-to-resolution, opt-out rates.
-* **Score**: Weighted composite (0–100) per channel/team with trend vs prior period.
-* **Privacy**: k-anonymity on all slices; DP noise optional for large orgs.
-* **Exports**: Aggregated CSV/JSON/PDF; webhook to BI tools; optional connectors to Google Sheets/HRIS (Phase 2).
-
-### 6.5 Admin & governance
-
-* Org-level install (Enterprise Grid) with workspace allowlist.
-* Data retention policy (default 7 days; min 0‑day streaming mode).
-* Access controls: Admin vs Manager vs User capabilities.
-* Audit logs: settings changes, data deletions, exports.
-* DSR/DSAR endpoints for personal data deletion and export.
-
-### 6.6 Org‑wide analytics via Exports/Discovery
-
-**Plan gate**: Business+ or Enterprise required for **all‑conversations exports**; **Enterprise Grid** for Discovery API. Workspace/Org Owner approval mandatory.
-
-**Pipeline (batch)**
-
-1. **Intake**: Accept Slack export bundles (ZIP/JSON) or Discovery API pulls on a schedule.
-2. **Normalize**: Parse channels/users, messages, threads (`thread_ts`), edits/deletes; convert timestamps to org TZ.
-3. **Redact**: Strip binaries; optionally keep file metadata only.
-4. **Pseudonymize**: Stable, salted user hashes per‑org; optional org‑unit mapping.
-5. **Aggregate**: Incidence per 1k, role mix, escalation streaks, reframe rate, time‑to‑repair.
-6. **Privacy**: Enforce k‑anonymity (no slice < 10 users); optional DP noise on large slices; retention TTL (0/7/30 days).
-7. **Output**: Persist **aggregates only** to analytics; raw exports encrypted and auto‑deleted per TTL.
-
-**SLOs**
-
-* Export ingestion ≤ 2h from availability; Discovery deltas ≤ 24h.
-* Reconciliation within ±1% of Slack analytics for message counts over the same window.
+* **Rate limiting:** max N nudges per user per hour; per-channel cooldown windows; dedupe on thread.
+* **Confidence thresholds:** only nudge when confident, else silently log a low-confidence event (aggregate counts only).
+* **Safety language:** empathetic tone; never shame; provide opt-out link in DM.
 
 ---
 
-## 7) Non-Functional Requirements
+## 7) Functional Requirements
 
-* **Latency**: Real-time nudges P95 < 2s; thread analyses P95 < 5s.
+### 7.1 Slack Integration
 
-* **Availability**: 99.9% monthly (excluding Slack outages).
+* **Events:** `message.channels`, `message.groups`, `message.mpim`, `app_mention` (and `message.im` only if DM coaching is enabled).
+* **Scopes (granular bot):**
 
-* **Scalability**: 100k daily active users, 10M msgs/day; autoscaling model servers.
+  * Read: `channels:read`, `groups:read`, `channels:history`, `groups:history`, `mpim:history`, (`im:history` if DM with bot), `users:read`.
+  * Write: `chat:write`, `chat:write.public` (optional), `reactions:write` (for feedback), `commands`.
+* **Coverage reality:** Bot **only** sees conversations it’s a member of; private channels require invite; no reading users’ DMs unless it’s a DM **with the bot**.
 
-* **Security**: TLS 1.2+, encryption at rest; key rotation; SSO/SAML for web dashboard.
+### 7.2 Detection Engine
 
-* **Compliance roadmap**: SOC 2 Type II within 9–12 months; HIPAA/PHI not supported v1.
+* **Classifier:** heuristic + LLM few-shot prompt for role detection (P, V, R) with confidence; lightweight profanity/hostility filter.
+* **Latency target:** nudge composed and sent **≤ 3s P95** from message timestamp.
+* **Content policy:** reject generating targeted harassment; always offer neutral tone rewrites.
 
-* **Observability**: Traces on event→nudge pipeline; redaction in logs; PII scrub.
+### 7.3 Nudge Generator
 
-* **Accessibility**: Web dashboard meets WCAG 2.1 AA.
+* Prompt templates per role with **rewrite macros** (facts → request; blame → concern; helpless → ownership; rescuing → coaching).
+* Personalization: remember user’s last chosen tone (if enabled).
+* Insert flow: provide copy-to-clipboard or prefilled draft via DM; for public posting, always require **user action** (never auto-post on their behalf).
 
-* **Compliance**: GDPR/CCPA readiness; consent audits and data processing records.
+### 7.4 Controls & Feedback
 
-* **Reliability**: Graceful fallbacks (e.g., “Unable to analyze—try again”), with retries respecting Slack rate limits.
+* Slash commands + App Home toggles; per-user and per-channel state.
+* Feedback: 👍/👎 attaches to message-id + anonymized label for model tuning (no raw text stored past retention window).
 
----
+### 7.5 Data & Privacy
 
-## 8) UX Flows (Slack-first)
-
-1. **Onboarding**
-
-   * Admin installs app → selects default policies → chooses pilot channels → posts intro message + pinned note.
-2. **First nudge**
-
-   * User sends edgy message → ephemeral nudge with reason + rewrite → 1-click insert.
-3. **Thread coaching**
-
-   * Message action → ephemeral summary + suggested next move → optional mini‑lesson link in App Home.
-4. **Weekly digest (Manager)**
-
-   * DM with top patterns, channels trending worse/better, and 3 prompts for retro.
-5. **App Home**
-
-   * Personal stats (private), saved lessons, nudge preferences, snooze/pause.
+* Processing: **in-memory/ephemeral**; store only minimal **event metadata** + **model labels** for short retention (e.g., 0–7 days, default 0).
+* No storage of raw message bodies beyond transient feature extraction buffer (<60s).
+* Pseudonymous telemetry only (counts of nudges, acceptance, thumbs up/down). No individual scorecards.
+* Clear `/drama delete-my-data` path to purge any retained user-specific preferences.
 
 ---
 
-## 9) Sample Coaching Content (v1 library)
+## 8) Non‑Functional Requirements
 
-* **Victim → Ownership**
+* **Performance:** P95 nudge latency ≤ 3s; 99th ≤ 5s.
+* **Reliability:** ≥ 99.5% weekly success rate on eligible nudges; retries on Slack HTTP 429s per backoff.
+* **Security:** TLS in transit; encrypted storage at rest; least-privilege IAM; signed releases.
+* **Compatibility:** English only; Slack Free/Pro/B+/Enterprise. Install flow must work for user‑initiated installs where workspace policy allows; otherwise request admin approval.
+* **Observability:** basic metrics (nudge attempts/sent/skipped; reasons), structured logs (no message bodies), alerting on error rate.
 
-  * Prompt: “What can I do in the next 24h?”
-  * Rewrite: “I’m blocked because X. I can do Y by EOD if Z is clarified—can you confirm?”
+---
+
+## 9) Success Metrics (MVP)
+
+* **Activation:** ≥ 20 pilot workspaces install; ≥ 50 channels invited.
+* **Engagement:** ≥ 30% weekly active authors (received ≥1 nudge).
+* **Quality:** ≥ 65% positive feedback (👍) on nudges; **false positive rate** ≤ 15% (measured via thumbs down + manual spot checks).
+* **Latency:** P95 ≤ 3s in production week 2.
+
+---
+
+## 10) Milestones & Deliverables
+
+**M0 — Tech Spike (1–2 weeks)**
+
+* Slack app scaffold; event subscription; ephemeral + DM fallback; minimal classifier stub; `/drama pause/resume`.
+
+**M1 — Alpha (3–4 weeks)**
+
+* Role detector v1 (LLM + heuristics), nudge templates v1, per-user/channel state, rate limiting, App Home basics, feedback 👍/👎.
+
+**M2 — Beta (2–3 weeks)**
+
+* Tone preference (optional), message action “Get coaching,” improved prompts, observability, security review, pilot docs.
+
+**Launch criteria**
+
+* Meets Success Metrics; zero P0 security issues; clear privacy policy.
+
+---
+
+## 11) Risks & Mitigations
+
+* **False positives** → Conservative thresholds; quick “Dismiss” and per-user pause; continuous template tuning.
+* **User backlash** → Empathetic language; easy opt-out; channel-level pause; clear install comms.
+* **Rate limits** → Batch classification, jitter, shared queue with backoff.
+* **Workspace policy variance** → Document that some installs require admin approval; provide request‑approval flow.
+
+---
+
+## 12) Appendix
+
+### 12.1 Example Nudge Templates
+
 * **Persecutor → Challenger**
 
-  * Prompt: “What outcome do I want?”
-  * Rewrite: “I’m concerned about \[specific]. Can we agree on criteria and next steps?”
+  * *Reflection:* “This might read as blame.”
+  * *Rewrite:* “I’m concerned about **\[specific]**. Can we align on **\[criteria]** and next steps?”
+  * *Prompt:* “What outcome do I want?”
+* **Victim → Ownership**
+
+  * *Reflection:* “This might read as powerless.”
+  * *Rewrite:* “I missed **\[context]**. I can deliver **\[X]** by **\[time]** if we clarify **\[Y]**—can someone confirm?”
+  * *Prompt:* “What can I do in the next 24h?”
 * **Rescuer → Coach**
 
-  * Prompt: “What support was asked for?”
-  * Rewrite: “Happy to help. What have you tried, and where do you want input?”
+  * *Reflection:* “This might jump into fixing.”
+  * *Rewrite:* “Happy to help—what have you tried, and where would feedback be most useful?”
+  * *Prompt:* “What support was asked for?”
+
+### 12.2 Minimal Manifest (indicative)
+
+```json
+{
+  "display_information": { "name": "Drama Guard" },
+  "features": {
+    "bot_user": { "display_name": "Drama Guard", "always_online": false },
+    "slash_commands": [{ "command": "/drama", "url": "https://app.example.com/slack/commands", "description": "Drama Guard controls" }]
+  },
+  "oauth_config": {
+    "redirect_urls": ["https://app.example.com/slack/oauth/callback"],
+    "scopes": {
+      "bot": [
+        "commands",
+        "chat:write",
+        "chat:write.public",
+        "channels:read", "channels:history",
+        "groups:read", "groups:history",
+        "mpim:history",
+        "im:history",
+        "reactions:write",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "request_url": "https://app.example.com/slack/events",
+      "bot_events": ["message.channels", "message.groups", "message.mpim", "app_mention"]
+    },
+    "interactivity": { "is_enabled": true, "request_url": "https://app.example.com/slack/interactive" }
+  }
+}
+```
 
 ---
 
-## 10) Architecture & Implementation Details
-
-**High-level**
-
-* Slack App → Events API / Socket Mode → Ingestion (HTTP/WS) → Queue (Pub/Sub or Kafka) → Feature Extractor → Classifier/LLM Rewriter → Policy Engine → Slack Delivery (ephemeral/DM) → Metrics Store + Analytics API → Web Dashboard.
-
-**Components**
-
-* **Ingestion**: Stateless workers validate Slack signatures; batch/stream to queue.
-* **Feature extraction**: Python service (spaCy/transformers) for tokenization, dependency parsing, role markers, context assembly.
-* **Model serving**: Role classifier (fine-tuned transformer) + rule-based features; LLM rewriter with prompt templates and safety constraints.
-* **Policy engine**: Applies channel/user settings, sensitivity thresholds, rate limits, privacy rules.
-* **Delivery**: Slack Web API calls; exponential backoff; idempotency keys per message.
-* **Storage**: Message content optional; default is feature vectors + hashed IDs; retention window enforced via TTL.
-* **Analytics**: Aggregation jobs compute incidence and scores; precomputed tiles for dashboard.
-* **Dashboard**: Lightweight web app (Next.js) for admins/managers; SSO; RBAC.
-
-**Data schema (simplified)**
-
-* `message_event`: team\_id, channel\_id, user\_id\_hash, ts, text\_redacted, features, lang, policy\_snapshot.
-* `nudge_event`: message\_ts, user\_id\_hash, nudge\_type, latency\_ms, accepted\_rewrite(bool).
-* `channel_metrics_daily`: counts, incidence, role\_mix, score.
-
-**Latency budget (P95)**
-
-* Slack event delivery: \~200ms
-* Feature + classify: \~300–600ms
-* Rewriter: \~600–900ms
-* Policy + postEphemeral: \~200–300ms
-
-**Rate limiting & backoff**
-
-* Respect Slack rate limits; shard per team; queue buffering; drop to summary-only mode on sustained overload.
-
-**Testing**
-
-* Offline eval set (10k labeled messages) per role; target F1 ≥ 0.85 overall, ≥ 0.80 per role.
-* Red‑team eval: sarcasm, code snippets, quotes, emojis, multi-language.
-* Shadow mode pilots (analyze-only) before enabling nudges.
-
----
-
-## 11) Security, Privacy, Ethics
-
-* **Consent**: Explicit channel opt-in; clear `/drama status` banner; DM scanning off by default.
-* **Transparency**: Bot announces on join; help center explains detection and limits.
-* **Privacy**: Default no-content storage; features-only with 7-day TTL; optional 0-day streaming mode.
-* **Controls**: User `/drama delete-my-data`; admin hard-delete API; export logs.
-* **Anonymity**: Aggregates only when ≥10 unique users; DP noise option for large slices.
-* **Misuse prevention**: No individual scorecards; managers cannot see individual nudges by default.
-* **Legal**: DPA, SCCs for cross-border; SOC 2 roadmap; not designed for PHI/PII heavy contexts.
-
----
-
-## 12) Metrics & KPIs
-
-* **Core**: drama incidence (per 1k msgs), reframe adoption rate, time-to-repair (first nudge → constructive reply), escalation streak length, opt-out rate, false positive rate.
-* **Business**: pilot NPS, weekly active nudged users (WANU), team retention correlation (exploratory), digest open/click.
-* **Quality**: model F1, latency P95, nudge acceptance CTR.
-
----
-
-## 13) Rollout Plan & Milestones
-
-**M0 – Discovery (2–3 weeks)**
-
-* Stakeholder interviews; labeled data collection (internal + synthetic); privacy review.
-
-**M1 – Alpha (6–8 weeks)**
-
-* Slack app with event ingestion, basic classifier, ephemeral nudges, `/drama` commands, App Home.
-* Shadow mode in 3 pilot channels; weekly qualitative reviews.
-
-**M2 – Beta (8–10 weeks)**
-
-* Rewriter v1, manager digest, health dashboard (anonymized), admin console, retention controls, audits.
-* Multi-tenant hardening, SOC 2 readiness controls.
-
-**M3 – GA (6–8 weeks)**
-
-* Language detection, improved sarcasm handling, DP option, Grid support, SSO, RBAC.
-* Pricing & billing (per-seat or per-workspace), support playbooks.
-
-**M4 – Post‑GA Enhancements**
-
-* Additional languages, Jira/GitHub linking for context, custom coaching modules, mobile-optimized App Home.
-
-**Timeline framing:** MVP target Q4 2025 (core detection, coaching, basic health checks); Phase 2 Q1 2026 (dashboard, customizations, integrations/connectors); Phase 3 Q2 2026 (feedback loops, multi‑platform exploration).
-
----
-
-## 14) Pricing & Packaging (placeholder)
-
-* **Starter**: up to 50 users, channel-based pricing, basic dashboards.
-* **Growth**: per-seat, full dashboards, manager digests, retention controls.
-* **Enterprise**: Grid, SSO, DPA/SCCs, custom data residency, advanced privacy.
-
-### 14A) Capabilities by Slack plan (summary)
-
-| Use case                             | Slack plan                 | Data access path               | Coverage                                                                                 | Consent model               | Freshness            |
-| ------------------------------------ | -------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------- | --------------------------- | -------------------- |
-| Real‑time Coaching (opt‑in channels) | Free/Pro/B+/Enterprise     | Events + Web API               | Public channels (auto‑join); private channels **by invite**; DMs with the bot (optional) | Channel opt‑in, visible bot | Real‑time            |
-| Org Health (manual exports)          | **Business+ / Enterprise** | Owner‑approved **data export** | All conversations incl. private & DMs (per policy)                                       | Admin authorization         | Batch (e.g., weekly) |
-| Org Health (programmatic)            | **Enterprise Grid**        | **Discovery API**              | Org‑wide across workspaces                                                               | Org‑level authorization     | Near‑daily           |
-| Audit/metadata only                  | B+/Enterprise              | Audit Logs API                 | Admin/security events (no message content)                                               | Admin‑scoped                | Near real‑time       |
-
-**Notes**
-
-* No individual scorecards by default; reports are anonymized and k‑anonymous.
-* DM scanning is off by default and can be disabled org‑wide even in Enterprise.
-
----
-
-## 15) Risks & Mitigations
-
-* **False positives → user frustration**: Start in shadow mode; conservative thresholds; easy `/pause`.
-* **Perceived surveillance**: Private-first, opt-in channels, no individual reporting.
-* **Cultural/locale mismatch**: Localization; tone presets; human-in-the-loop feedback.
-* **Slack API changes**: Version pin; integration tests; feature flags.
-* **Adversarial use**: Abuse detection; rate limits; admin overrides.
-
----
-
-## 16) Open Questions
-
-* Should we allow optional public prompts (visible to all) in retrospect threads? Default off.
-* How to handle legal hold/eDiscovery requests while honoring privacy promises?
-* Should managers be able to see *aggregated* reframe adoption rates by team?
-* What is the minimum viable accuracy that users will tolerate in early pilots?
-
----
-
-## 17) Glossary
-
-* **Below the line**: Drama posture (Victim/Persecutor/Rescuer).
-* **Nudge**: Private ephemeral coaching message to the author.
-* **Reframe**: A constructive rewrite or prompt that shifts posture.
-* **k‑anonymity**: Minimum cohort size for aggregated reporting.
-
----
-
-## 18) Appendices
-
-### A. Slack scopes checklist
-
-* Read history (where installed/invited), write messages (ephemeral + DM), shortcuts/commands, user/team metadata (non-sensitive), reactions.
-
-### B. Sample Admin Policy Presets
-
-* **Conservative**: Low sensitivity, no DM scanning, 0-day retention (features only).
-* **Balanced**: Medium sensitivity, 7-day retention, manager digest enabled.
-* **Proactive**: High sensitivity, 14-day retention, DP noise for analytics.
-* **Ultra‑Privacy**: Opt-in analysis only; no raw message storage; store only consents and aggregated analytics.
-
-### C. Evaluation dataset plan
-
-* Collect 10–15k labeled snippets (balanced by role/intensity, plus neutral), seed from public corpora where permitted, augment with paraphrases, and include sarcasm + emoji cases.
-
-### D. References
-
-* Transactional Analysis (Karpman Drama Triangle)
-* *The 15 Commitments of Conscious Leadership*
-
-### E. Open Items
-
-* Pricing model details (e.g., freemium vs seat-based)
-* Detailed wireframes for App Home, manager digest, and dashboard
+**End of MVP PRD**
