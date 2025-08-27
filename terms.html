@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Terms of Service — Drama Guard</title>
   <meta name="description" content="Terms of Service for Drama Guard. Read the terms that govern your use of the service and Slack application." />
-  <!-- Tailwind CSS (CDN) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind CSS (CDN) with Typography plugin for better prose defaults -->
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
   <style>
     html { scroll-behavior: smooth; }
+    /* Offset anchor jump for sticky headers */
+    h2 { scroll-margin-top: 96px; }
   </style>
   <!-- Favicons & manifest -->
   <link rel="icon" href="favicon.ico" sizes="any">
@@ -28,12 +30,40 @@
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-6 py-12">
+  <main class="max-w-4xl mx-auto px-6 py-16 md:py-20">
     <h1 class="text-3xl md:text-4xl font-bold">Terms of Service</h1>
     <p class="mt-2 text-sm text-gray-500">Last updated: August 27, 2025</p>
 
+    <div class="mt-6 md:mt-8 rounded-lg bg-gray-50 p-4 md:p-5">
+      <div class="text-xs uppercase tracking-wide text-gray-500 mb-2">On this page</div>
+      <nav aria-label="Table of contents">
+        <ul class="grid sm:grid-cols-2 gap-y-1.5 gap-x-6 text-sm leading-6">
+          <li><a class="text-indigo-700 hover:underline" href="#acceptance">Acceptance of Terms</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#eligibility">Eligibility</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#account-admin">Account and Workspace Administration</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#use">Use of the Service</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#billing">Subscriptions, Trials, and Billing</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#ip">Intellectual Property</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#user-content">User Content and Feedback</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#privacy">Privacy</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#third-party">Third‑Party Services</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#confidentiality">Confidentiality</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#security">Security</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#warranties">Warranties and Disclaimers</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#liability">Limitation of Liability</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#indemnification">Indemnification</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#termination">Term and Termination</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#data-export">Data Export and Deletion</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#changes">Changes to the Service and Terms</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#governing-law">Governing Law; Dispute Resolution</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#contact">Contact</a></li>
+          <li><a class="text-indigo-700 hover:underline" href="#miscellaneous">Miscellaneous</a></li>
+        </ul>
+      </nav>
+    </div>
+
     <div class="prose prose-indigo max-w-none mt-8">
-      <h2>1. Acceptance of Terms</h2>
+      <h2 id="acceptance">1. Acceptance of Terms</h2>
       <p>
         These Terms of Service (the “Terms”) govern your access to and use of Drama Guard’s website, Slack application,
         and related services (collectively, the “Service”). By installing, accessing, or using the Service, you agree to be bound
@@ -41,19 +71,19 @@
         to bind that organization and that acceptance of these Terms is on its behalf.
       </p>
 
-      <h2>2. Eligibility</h2>
+      <h2 id="eligibility">2. Eligibility</h2>
       <p>
         You must be at least 16 years old and permitted by your organization and applicable law to use the Service.
       </p>
 
-      <h2>3. Account and Workspace Administration</h2>
+      <h2 id="account-admin">3. Account and Workspace Administration</h2>
       <p>
         Installation and use within a Slack workspace may require administrator authorization. Workspace admins control configuration
         (including invited channels, data retention, privacy settings, and removal). You acknowledge that your use may be subject to
         your organization’s policies.
       </p>
 
-      <h2>4. Use of the Service</h2>
+      <h2 id="use">4. Use of the Service</h2>
       <ul>
         <li><strong>Permitted use.</strong> You may use the Service to detect and coach on drama dynamics and to view anonymized insights.</li>
         <li><strong>Acceptable use.</strong> You will not misuse the Service, including by attempting to reverse engineer, interfere with security,
@@ -62,60 +92,60 @@
           off by default and can be disabled organization‑wide.</li>
       </ul>
 
-      <h2>5. Subscriptions, Trials, and Billing</h2>
+      <h2 id="billing">5. Subscriptions, Trials, and Billing</h2>
       <p>
         Access to certain features may require a paid subscription. Prices, plans, and limits are described on our pricing page
         or in an order form. Unless otherwise stated, subscriptions renew automatically until canceled by the admin. Trial features
         may be provided on an evaluation basis and can be modified or terminated at any time.
       </p>
 
-      <h2>6. Intellectual Property</h2>
+      <h2 id="ip">6. Intellectual Property</h2>
       <p>
         We retain all rights, title, and interest in and to the Service, including software, models, documentation, and branding.
         No rights are granted except as expressly stated in these Terms. You grant us a limited license to process data solely to
         provide and improve the Service.
       </p>
 
-      <h2>7. User Content and Feedback</h2>
+      <h2 id="user-content">7. User Content and Feedback</h2>
       <p>
         To the extent you or your workspace submit content to the Service, you grant us the rights necessary to operate the Service
         (including processing and generating derived features). If you provide feedback or suggestions, you grant us a perpetual,
         irrevocable, royalty‑free license to use it without restriction.
       </p>
 
-      <h2>8. Privacy</h2>
+      <h2 id="privacy">8. Privacy</h2>
       <p>
         Our <a href="/privacy.html">Privacy Policy</a> describes how we collect, use, and share information. By using the Service,
         you acknowledge our data practices as described there.
       </p>
 
-      <h2>9. Third‑Party Services</h2>
+      <h2 id="third-party">9. Third‑Party Services</h2>
       <p>
         The Service integrates with Slack and may rely on other third‑party providers. We are not responsible for third‑party
         services, their availability, or their terms and privacy practices.
       </p>
 
-      <h2>10. Confidentiality</h2>
+      <h2 id="confidentiality">10. Confidentiality</h2>
       <p>
         We will handle non‑public information received from you with reasonable care and use it solely to provide the Service,
         except as otherwise permitted by these Terms or required by law.
       </p>
 
-      <h2>11. Security</h2>
+      <h2 id="security">11. Security</h2>
       <p>
         We implement industry‑standard safeguards to protect information, including encryption in transit and at rest,
         access controls, and audit logging. No system is perfectly secure; you are responsible for maintaining the
         confidentiality of any credentials.
       </p>
 
-      <h2>12. Warranties and Disclaimers</h2>
+      <h2 id="warranties">12. Warranties and Disclaimers</h2>
       <p>
         THE SERVICE IS PROVIDED “AS IS” AND “AS AVAILABLE.” TO THE MAXIMUM EXTENT PERMITTED BY LAW, WE DISCLAIM ALL WARRANTIES,
         EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON‑INFRINGEMENT. We do not warrant
         that the Service will be uninterrupted or error‑free.
       </p>
 
-      <h2>13. Limitation of Liability</h2>
+      <h2 id="liability">13. Limitation of Liability</h2>
       <p>
         TO THE MAXIMUM EXTENT PERMITTED BY LAW, NEITHER DRAMA GUARD NOR ITS SUPPLIERS WILL BE LIABLE FOR ANY INDIRECT, INCIDENTAL,
         SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY,
@@ -124,45 +154,45 @@
         THE SERVICE IN THE 12 MONTHS PRECEDING THE EVENT GIVING RISE TO THE CLAIM.
       </p>
 
-      <h2>14. Indemnification</h2>
+      <h2 id="indemnification">14. Indemnification</h2>
       <p>
         To the extent permitted by law, you will indemnify and hold harmless Drama Guard and its affiliates from and against any
         claims, liabilities, damages, losses, and expenses arising from your misuse of the Service or violation of these Terms.
       </p>
 
-      <h2>15. Term and Termination</h2>
+      <h2 id="termination">15. Term and Termination</h2>
       <p>
         These Terms remain in effect while you use the Service. We may suspend or terminate access for violation of these Terms or
         to protect the Service or others. Upon termination, you must stop using the Service. Certain sections survive termination
         (including Intellectual Property, Disclaimers, Limitation of Liability, and Indemnification).
       </p>
 
-      <h2>16. Data Export and Deletion</h2>
+      <h2 id="data-export">16. Data Export and Deletion</h2>
       <p>
         Workspace admins may request data export (where applicable) and deletion according to our retention settings and Privacy Policy.
       </p>
 
-      <h2>17. Changes to the Service and Terms</h2>
+      <h2 id="changes">17. Changes to the Service and Terms</h2>
       <p>
         We may modify the Service or these Terms from time to time. We will post updates here and adjust the “Last updated” date.
         Material changes will be communicated through the Service or by email where appropriate. If you continue to use the Service
         after changes take effect, you accept the updated Terms.
       </p>
 
-      <h2>18. Governing Law; Dispute Resolution</h2>
+      <h2 id="governing-law">18. Governing Law; Dispute Resolution</h2>
       <p>
         These Terms are governed by the laws of the state of California, excluding its conflict of law rules. Any disputes will be
         resolved in the state or federal courts located in San Francisco County, California, and you consent to their jurisdiction
         and venue. The U.N. Convention on Contracts for the International Sale of Goods does not apply.
       </p>
 
-      <h2>19. Contact</h2>
+      <h2 id="contact">19. Contact</h2>
       <p>
         Questions about these Terms can be sent to <a href="mailto:legal@dramaguard.io">legal@dramaguard.io</a> or
         <a href="mailto:support@dramaguard.io">support@dramaguard.io</a>.
       </p>
 
-      <h2>20. Miscellaneous</h2>
+      <h2 id="miscellaneous">20. Miscellaneous</h2>
       <ul>
         <li>These Terms constitute the entire agreement between you and us regarding the Service.</li>
         <li>If any provision is unenforceable, it will be modified to the minimum extent necessary; the remainder remains in effect.</li>
