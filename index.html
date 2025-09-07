@@ -317,7 +317,7 @@
                     Feel that low hum of drama? We can end it.
                   </h1>
                   <p className="mt-4 text-lg text-gray-600 max-w-xl">
-                    From Silicon Valley to New York finance, we've seen the same invisible forces kill momentum: personal power leaks and structural fog. DramaGuard turns your Slack into a pocket therapist that catches drama before it spreads.
+                    From Silicon Valley to New York finance, we've seen the same invisible forces kill momentum: personal power leaks and structural fog. DramaGuard turns your Slack into a pocket Empowerment Coach that catches drama before it spreads.
                   </p>
                   <div className="mt-6 flex gap-3">
                     <a href="http://app.dramaguard.io/slack/install"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
@@ -383,7 +383,7 @@
                 When power becomes currency and decisions drag, we help name the decision-maker once, in writing, visible to all. Not bureaucracy—clarity.
               </FeatureCard>
               <FeatureCard title="Privacy that builds trust" icon={<span>🛡️</span>}>
-                Your pocket therapist stays private. Coaching is ephemeral, insights are anonymized, and you control what gets analyzed.
+                Your pocket Empowerment Coach stays private. Coaching is ephemeral, insights are anonymized, and you control what gets analyzed.
               </FeatureCard>
               <FeatureCard title="Momentum over perfection" icon={<span>⚡</span>}>
                 It's not about perfect—it's about catching yourself mid-victim and rewriting. Drama thrives in silence; clarity starves it.
@@ -402,7 +402,7 @@
                   { title: "Twenty years of listening", copy: "We've walked into boardrooms and bullpens, feeling that low hum of drama before we even sit down.", icon: "👂" },
                   { title: "Two invisible forces", copy: "Personal power leaks (sliding into victim/hero/villain) and structural fog (unclear decision-makers).", icon: "🔍" },
                   { title: "Start inside, then structure", copy: "Drop the triangle. Speak from presence. Then get surgical with structure—name the decision-maker once.", icon: "💡" },
-                  { title: "Software makes it stick", copy: "DramaGuard reads your Slack history, bundles intel into workshops, then becomes your pocket therapist.", icon: "🔄" },
+                  { title: "Software makes it stick", copy: "DramaGuard reads your Slack history, bundles intel into workshops, then becomes your pocket Empowerment Coach.", icon: "🔄" },
                 ].map((s, i) => (
                   <Card key={i}>
                     <CardHeader>
@@ -418,7 +418,7 @@
           {/* Nudges */}
           <Section id="nudges" className="py-20">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold">Your pocket therapist in action</h2>
+              <h2 className="text-3xl md:text-4xl font-bold">Your pocket Empowerment Coach in action</h2>
               <p className="mt-3 text-gray-600">As you're typing "ugh why are we always doing it this way?", before you hit send it offers: "Try: what's the next step I'd like to own?" Private. Gentle. Effective.</p>
             </div>
             <div className="mt-10 grid md:grid-cols-3 gap-6">
@@ -669,36 +669,66 @@
             </Section>
           </div>
 
-          {/* Pricing */}
-          <Section id="pricing" className="py-20">
+          {/* How it works process */}
+          <Section id="process" className="py-20">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold">Simple pricing that scales with you</h2>
-              <p className="mt-3 text-gray-600">Start small, grow culture‑wide.</p>
+              <h2 className="text-3xl md:text-4xl font-bold">Here's how we end it</h2>
+              <p className="mt-3 text-gray-600">From installation to empowerment—the complete journey from drama to clarity.</p>
             </div>
-            <div className="mt-10 grid md:grid-cols-3 gap-6">
+            <div className="mt-10 grid md:grid-cols-4 gap-6">
               {[
-                { name: "Starter", price: "$199/mo", blurb: "Up to 50 users. Channel‑based pricing.", items: ["Core detection & nudges", "2 pilot channels", "Basic dashboard"] },
-                { name: "Growth", price: "$5/user/mo", blurb: "Full analytics & digests.", items: ["All Starter features", "Manager weekly digests", "Custom nudge styles", "7‑day retention controls"] },
-                { name: "Enterprise", price: "Talk to us", blurb: "Grid, SSO, DPA/SCCs, residency.", items: ["Org‑wide install", "RBAC & SSO/SAML", "DP noise & k‑anonymity", "Custom data residency"] },
-              ].map((tier, i) => (
-                <Card key={i}>
+                { 
+                  step: "01", 
+                  title: "Install & Evaluate", 
+                  description: "You install DramaGuard in Slack like any app. Day one it reads your history—no judgment, just patterns.", 
+                  details: "Here's where Victim talk spikes around performance reviews, here's where Hero threads turn into blame marathons.",
+                  icon: "📱"
+                },
+                { 
+                  step: "02", 
+                  title: "Assessment Workshop", 
+                  description: "We bundle that intel into a half-day workshop—real Slack screenshots on the wall, live coaching.", 
+                  details: "Everyone leaves with their own drama fingerprint and three moves to shut it down.",
+                  icon: "🎯"
+                },
+                { 
+                  step: "03", 
+                  title: "Pocket Coach Activation", 
+                  description: "DramaGuard becomes your Empowerment Coach: as you're typing, before you hit send it offers gentle rewrites.", 
+                  details: "Private. Gentle. 'Try: what's the next step I'd like to own?' No shaming—just momentum.",
+                  icon: "💬"
+                },
+                { 
+                  step: "04", 
+                  title: "Monthly Progress", 
+                  description: "Once a month we reconnect—ten minutes reviewing the heatmap, twenty celebrating progress.", 
+                  details: "How many times someone caught themselves mid-victim and rewrote. It's not about perfect—it's about momentum.",
+                  icon: "📈"
+                },
+              ].map((phase, i) => (
+                <Card key={i} className="relative">
                   <CardHeader>
-                    <CardTitle className="flex items-baseline justify-between">
-                      <span>{tier.name}</span>
-                      <span className="text-xl font-semibold">{tier.price}</span>
-                    </CardTitle>
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-2xl">{phase.icon}</span>
+                      <div className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full">{phase.step}</div>
+                    </div>
+                    <CardTitle className="text-lg">{phase.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600 text-sm">{tier.blurb}</p>
-                    <ul className="mt-4 space-y-2 text-sm">
-                      {tier.items.map((it, idx) => (
-                        <li key={idx} className="flex items-center gap-2">✅ {it}</li>
-                      ))}
-                    </ul>
-                    <Button className="w-full mt-6">Choose {tier.name}</Button>
+                    <p className="text-gray-700 text-sm leading-relaxed mb-3">{phase.description}</p>
+                    <p className="text-gray-600 text-xs italic">{phase.details}</p>
                   </CardContent>
                 </Card>
               ))}
+            </div>
+            <div className="mt-12 text-center">
+              <Card className="max-w-2xl mx-auto bg-gradient-to-r from-indigo-50 to-blue-50 border-indigo-200">
+                <CardContent className="p-8">
+                  <h3 className="text-xl font-bold mb-3">Ready to transform your team dynamics?</h3>
+                  <p className="text-gray-600 mb-6">Twenty years of boardroom experience, distilled into a Slack app. Drama thrives in silence; clarity starves it.</p>
+                  <a href="http://app.dramaguard.io/slack/install"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
+                </CardContent>
+              </Card>
             </div>
           </Section>
 
